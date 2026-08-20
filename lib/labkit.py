@@ -80,7 +80,7 @@ def model_key() -> str:
     p = active_json()
     if p.exists():
         try:
-            key = json.loads(p.read_text()).get("model_key")
+            key = json.loads(p.read_text(encoding="utf-8")).get("model_key")
             if key in MODELS:
                 return key
         except (ValueError, OSError):
@@ -197,7 +197,7 @@ def load_hardware(required: bool = True) -> dict:
         if required:
             die("hardware.json not found.", "Run: make probe")
         return {}
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def load_active(required: bool = True) -> dict:
@@ -206,7 +206,7 @@ def load_active(required: bool = True) -> dict:
         if required:
             die("models/active.json not found.", "Run: make setup")
         return {}
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def primary_model() -> str:
@@ -440,7 +440,7 @@ def serve_bg(model: str, port: int | None = None, embedding: bool = False, quiet
     # dies we have to be able to show them why. Log to a file and replay it.
     log_path = repo_root() / "benchmarks" / ".llama-server.log"
     log_path.parent.mkdir(exist_ok=True)
-    log = open(log_path, "w") if quiet else None
+    log = open(log_path, "w", encoding="utf-8") if quiet else None
     proc = subprocess.Popen(cmd, stdout=log or None, stderr=subprocess.STDOUT if log else None)
     try:
         if not wait_healthy(port, proc=proc):
@@ -451,7 +451,8 @@ def serve_bg(model: str, port: int | None = None, embedding: bool = False, quiet
                 log = None
             tail = ""
             try:
-                tail = "".join(open(log_path).readlines()[-20:])
+                with open(log_path, encoding="utf-8") as log_file:
+                    tail = "".join(log_file.readlines()[-20:])
             except OSError:
                 pass
             died = proc.poll() is not None
@@ -510,9 +511,9 @@ def run_bench(args: list[str], timeout: int = 1800) -> str:
 
 def write_report(filename: str, markdown: str, data: object | None = None) -> Path:
     out = bench_dir() / filename
-    out.write_text(markdown)
+    out.write_text(markdown, encoding="utf-8")
     if data is not None:
-        out.with_suffix(".json").write_text(json.dumps(data, indent=2))
+        out.with_suffix(".json").write_text(json.dumps(data, indent=2), encoding="utf-8")
     return out
 
 

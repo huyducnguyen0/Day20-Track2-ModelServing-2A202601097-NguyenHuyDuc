@@ -28,7 +28,7 @@ $SysPy  = 'python'
 
 function Need-Venv {
     if (-not (Test-Path $VenvPy)) {
-        Write-Host "ERROR: no virtualenv found at .venv\" -ForegroundColor Red
+        Write-Host "ERROR: no virtualenv found at .venv folder" -ForegroundColor Red
         Write-Host "Run this first:  .\lab.ps1 setup"
         exit 1
     }
@@ -45,7 +45,7 @@ function Locust {
 switch ($Target) {
     'help' {
         Write-Host ""
-        Write-Host "Day 20 lab — Windows runner" -ForegroundColor Cyan
+        Write-Host "Day 20 lab - Windows runner" -ForegroundColor Cyan
         Write-Host "Usage:  .\lab.ps1 <target>"
         Write-Host ""
         Write-Host "Setup (00)"
